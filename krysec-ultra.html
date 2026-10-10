@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>KRYSEC Cybersecurity Academy</title>
+<meta name="theme-color" content="#030712">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23030712'/%3E%3Cpath d='M32 6l20 8v16c0 14-9 24-20 28C21 54 12 44 12 30V14z' fill='none' stroke='%230066FF' stroke-width='3'/%3E%3Cpath d='M24 22v20M24 32l12-10M26 32l12 10' stroke='%2300D4FF' stroke-width='3.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config={theme:{extend:{colors:{navy:'#030712',cyber:'#0066FF',neon:'#00D4FF',ok:'#00ffa3',danger:'#ff3d71'},fontFamily:{orb:['Orbitron','sans-serif'],raj:['Rajdhani','sans-serif'],mono:['JetBrains Mono','monospace']}}}}
+</script>
+<style>
+:root{--blue:#0066FF;--cyan:#00D4FF}
+html,body{background:#030712;color:#dbe8ff;font-family:'Rajdhani',sans-serif;font-size:17px;overflow-x:hidden}
+body{-webkit-tap-highlight-color:transparent}
+::selection{background:#0066FF;color:#fff}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#0066FF;border-radius:9px}
+.mono{font-family:'JetBrains Mono',monospace}.orb{font-family:'Orbitron',sans-serif}
+
+/* ---------- Backgrounds ---------- */
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.floor{position:fixed;left:-50%;right:-50%;bottom:-10%;height:50vh;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,102,255,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(0,102,255,.45) 1px,transparent 1px);
+  background-size:60px 60px;transform:perspective(420px) rotateX(62deg);animation:floor 2.4s linear infinite;
+  -webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%);mask-image:linear-gradient(to top,#000 10%,transparent 85%)}
+@keyframes floor{to{background-position:0 60px}}
+.glow-orb{position:fixed;border-radius:50%;filter:blur(90px);z-index:0;pointer-events:none;animation:drift 14s ease-in-out infinite alternate}
+.glow-orb.a{width:340px;height:340px;background:#0066FF;opacity:.3;top:-90px;left:-90px}
+.glow-orb.b{width:300px;height:300px;background:#00D4FF;opacity:.18;top:45%;right:-120px;animation-delay:-5s}
+.glow-orb.c{width:280px;height:280px;background:#7a2cff;opacity:.2;bottom:-60px;left:10%;animation-delay:-9s}
+@keyframes drift{to{transform:translate(60px,70px) scale(1.25)}}
+.scan{position:fixed;inset:0;z-index:60;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.scan::after{content:"";position:absolute;left:0;right:0;height:140px;top:-140px;background:linear-gradient(180deg,transparent,rgba(0,212,255,.07),transparent);animation:sweep 7s linear infinite}
+@keyframes sweep{to{top:110%}}
+.vig{position:fixed;inset:0;z-index:59;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55))}
+#cursor{position:fixed;width:280px;height:280px;border-radius:50%;pointer-events:none;z-index:1;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(0,150,255,.2),transparent 65%);opacity:0}
+#prog{position:fixed;top:0;left:0;height:3px;width:100%;z-index:70;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#0066FF,#00D4FF,#00ffa3);box-shadow:0 0 14px #00D4FF}
+
+/* ---------- Boot ---------- */
+#boot{position:fixed;inset:0;z-index:100;background:#030712;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:'JetBrains Mono';color:#00D4FF}
+#boot pre{font-size:12px;line-height:1.7;min-height:110px;width:min(420px,100%);white-space:pre-wrap}
+.bar{width:min(420px,100%);height:6px;border-radius:9px;background:#0a1632;overflow:hidden;border:1px solid rgba(0,102,255,.6);margin-top:14px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#0066FF,#00D4FF);box-shadow:0 0 14px #00D4FF}
+
+/* ---------- Text FX ---------- */
+.neon{text-shadow:0 0 6px rgba(0,212,255,.9),0 0 18px rgba(0,102,255,.9),0 0 40px rgba(0,102,255,.7)}
+.glitch{position:relative;display:inline-block;color:#fff;animation:npulse 3s ease-in-out infinite}
+.glitch::before,.glitch::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;overflow:hidden;opacity:.85}
+.glitch::before{color:#00D4FF;clip-path:inset(0 0 60% 0);animation:gl1 3.4s infinite steps(1)}
+.glitch::after{color:#ff3d71;clip-path:inset(60% 0 0 0);animation:gl2 2.9s infinite steps(1)}
+@keyframes gl1{0%,88%,100%{transform:translate(0)}90%{transform:translate(-4px,1px)}93%{transform:translate(3px,-1px)}96%{transform:translate(-2px,0)}}
+@keyframes gl2{0%,84%,100%{transform:translate(0)}86%{transform:translate(4px,-1px)}90%{transform:translate(-3px,1px)}}
+@keyframes npulse{0%,100%{text-shadow:0 0 8px #00D4FF,0 0 24px #0066FF,0 0 50px #0066FF}50%{text-shadow:0 0 14px #00D4FF,0 0 40px #0066FF,0 0 90px #0066FF}}
+.caret{display:inline-block;width:10px;height:1.05em;background:#00D4FF;margin-left:4px;vertical-align:-3px;box-shadow:0 0 10px #00D4FF;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.logo-svg{filter:drop-shadow(0 0 8px #0066FF);animation:logo 3s ease-in-out infinite}
+@keyframes logo{50%{filter:drop-shadow(0 0 16px #00D4FF)}}
+.ring{transform-origin:32px 32px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- Buttons ---------- */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:0;font-family:'Orbitron';font-weight:700;letter-spacing:2px;font-size:13px;color:#fff;padding:15px 28px;border-radius:14px;
+  background:linear-gradient(135deg,#0066FF,#0037b3);box-shadow:0 0 0 1px rgba(0,212,255,.5),0 0 22px rgba(0,102,255,.65);text-decoration:none;animation:breathe 2.8s ease-in-out infinite;will-change:transform}
+.btn:hover{box-shadow:0 0 0 1px #00D4FF,0 0 42px rgba(0,212,255,.95),0 10px 40px rgba(0,102,255,.8)}
+.btn::after{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-22deg);animation:sheen 3.2s infinite}
+@keyframes sheen{to{left:170%}}
+@keyframes breathe{50%{box-shadow:0 0 0 1px rgba(0,212,255,.8),0 0 36px rgba(0,150,255,.95)}}
+.btn[disabled]{opacity:.65;pointer-events:none}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rip .7s ease-out;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+.spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+
+/* ---------- Neon badges ---------- */
+.badge{position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:16px;text-decoration:none;color:#fff;background:#050d22;overflow:hidden;will-change:transform;isolation:isolate}
+.badge::before{content:"";position:absolute;inset:-2px;z-index:-2;border-radius:18px;background:conic-gradient(from var(--a,0deg),var(--c1),var(--c2),var(--c1));animation:rot 3.5s linear infinite}
+.badge::after{content:"";position:absolute;inset:1.5px;z-index:-1;border-radius:15px;background:#050d22}
+.badge:hover{box-shadow:0 0 34px var(--c1),0 0 70px var(--c2)}
+.badge svg{width:30px;height:30px;flex:none;filter:drop-shadow(0 0 8px var(--c1))}
+.badge b{font-family:'Orbitron';font-size:12px;letter-spacing:2px;display:block}
+.badge small{font-family:'JetBrains Mono';font-size:10px;color:#8ea4d0}
+.badge.tg{--c1:#0066FF;--c2:#00D4FF}.badge.ig{--c1:#8a2bff;--c2:#ff3d9a}
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes rot{to{--a:360deg}}
+
+/* ---------- Cards ---------- */
+.card{position:relative;border-radius:20px;padding:22px;cursor:pointer;background:#07102a;backdrop-filter:blur(8px);overflow:hidden;isolation:isolate;transform-style:preserve-3d;transition:box-shadow .35s;will-change:transform}
+.card::before{content:"";position:absolute;inset:-2px;z-index:-2;border-radius:22px;background:conic-gradient(from var(--a,0deg),#0066FF,#00D4FF,#7a2cff,#0066FF);animation:rot 5s linear infinite}
+.card::after{content:"";position:absolute;inset:1.5px;z-index:-1;border-radius:19px;background:linear-gradient(160deg,#0a1632,#040918)}
+.card:hover{box-shadow:0 0 45px rgba(0,102,255,.7),0 0 90px rgba(0,212,255,.25)}
+.card .shine{position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(0,212,255,.28),transparent 55%);opacity:0;transition:.3s;pointer-events:none}
+.card:hover .shine,.card.sel .shine{opacity:1}
+.card.sel{box-shadow:0 0 50px rgba(0,212,255,.85)}
+.ico{font-size:34px;display:inline-block;animation:float 3.2s ease-in-out infinite;filter:drop-shadow(0 0 12px #0066FF);transform:translateZ(40px)}
+.card:hover .ico{animation:bounce .6s ease infinite}
+@keyframes float{50%{transform:translateZ(40px) translateY(-8px)}}
+@keyframes bounce{50%{transform:translateZ(60px) translateY(-12px) scale(1.15) rotate(-6deg)}}
+.tag{font-size:11px;padding:3px 9px;border-radius:7px;color:#00D4FF;background:rgba(0,102,255,.16);border:1px solid rgba(0,102,255,.45);transition:.2s}
+.card:hover .tag{box-shadow:0 0 10px rgba(0,212,255,.5);transform:translateY(-2px)}
+.paid{position:absolute;top:16px;right:16px;font-size:10px;letter-spacing:1.5px;padding:3px 9px;border-radius:7px;color:#00ffa3;border:1px solid #00ffa3;box-shadow:0 0 10px rgba(0,255,163,.45);animation:flash 2.2s infinite}
+@keyframes flash{50%{box-shadow:0 0 20px rgba(0,255,163,.9)}}
+
+/* ---------- Simulator ---------- */
+.hud{border-radius:20px;background:rgba(5,12,30,.9);border:1px solid rgba(0,102,255,.55);box-shadow:0 0 40px rgba(0,102,255,.25),inset 0 0 40px rgba(0,102,255,.06);overflow:hidden}
+.hud .top{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#07122c;border-bottom:1px solid rgba(0,102,255,.4);font:11px 'JetBrains Mono';color:#6f86b8}
+.hud .top i{width:10px;height:10px;border-radius:50%;display:block}
+.kpi{border:1px solid rgba(0,102,255,.4);border-radius:14px;padding:10px 6px;text-align:center;background:rgba(8,18,38,.7);transition:.3s}
+.kpi:hover{box-shadow:0 0 24px rgba(0,102,255,.7);border-color:#00D4FF}
+.kpi b{display:block;font:700 19px 'Orbitron';font-variant-numeric:tabular-nums}
+.kpi span{font:9.5px 'JetBrains Mono';letter-spacing:1.5px;color:#7f95c4}
+#log{height:210px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;font:11.5px/1.65 'JetBrains Mono';padding:10px 14px}
+#log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-a{color:#ff3d71}.lg-b{color:#00ffa3}.lg-s{color:#00D4FF}.lg-w{color:#ffcc33}.lg-t{color:#5d739f}
+
+/* ---------- Form ---------- */
+.panel{position:relative;border-radius:22px;padding:24px;background:rgba(7,16,38,.9);backdrop-filter:blur(10px);border:1px solid rgba(0,102,255,.55);box-shadow:0 0 50px rgba(0,102,255,.25),inset 0 0 40px rgba(0,102,255,.07)}
+.panel::before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:2px;background:linear-gradient(90deg,transparent,#00D4FF,transparent);animation:line 3s ease-in-out infinite}
+@keyframes line{50%{left:0;right:0;opacity:.4}}
+.field{position:relative;margin-top:20px}
+.field input,.field select{width:100%;padding:18px 14px 8px;border-radius:12px;background:#060e24;border:1px solid rgba(0,102,255,.5);color:#fff;font:inherit;outline:0;appearance:none;transition:.25s}
+.field label{position:absolute;left:14px;top:14px;color:#6f86b8;font:13px 'JetBrains Mono';letter-spacing:1px;pointer-events:none;transition:.2s}
+.field input:focus,.field select:focus{border-color:#00D4FF;box-shadow:0 0 0 3px rgba(0,212,255,.16),0 0 26px rgba(0,212,255,.55);transform:translateY(-2px)}
+.field input:not(:placeholder-shown)~label,.field input:focus~label,.field select:valid~label,.field select:focus~label{top:5px;font-size:10px;color:#00D4FF}
+.field.bad input,.field.bad select{border-color:#ff3d71;animation:shake .4s}
+.field .e{color:#ff3d71;font-size:12px;min-height:15px;margin-top:3px;padding-left:4px}
+.field .arrow{position:absolute;right:14px;top:18px;color:#00D4FF;pointer-events:none}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.hp{position:absolute;left:-9999px;opacity:0;height:0}
+
+/* ---------- Misc ---------- */
+.stat{border:1px solid rgba(0,102,255,.4);border-radius:16px;background:rgba(8,18,38,.7);backdrop-filter:blur(6px);padding:14px 6px;transition:.3s}
+.stat:hover{box-shadow:0 0 28px rgba(0,102,255,.7);border-color:#00D4FF}
+.marq{overflow:hidden;white-space:nowrap;border-block:1px solid rgba(0,102,255,.4);background:rgba(0,102,255,.07)}
+.marq div{display:inline-block;padding:9px 0;animation:marq 28s linear infinite;color:#00D4FF;font:12px 'JetBrains Mono';letter-spacing:2px}
+@keyframes marq{to{transform:translateX(-50%)}}
+.globe-box{position:relative;border-radius:22px;overflow:hidden;border:1px solid rgba(0,102,255,.55);box-shadow:0 0 50px rgba(0,102,255,.35),inset 0 0 60px rgba(0,102,255,.12);background:radial-gradient(circle at 50% 50%,rgba(0,102,255,.2),rgba(3,7,18,.95) 70%)}
+#globe{display:block;width:100%;height:400px;cursor:grab;touch-action:pan-y}
+.g-hud{position:absolute;left:14px;top:12px;font:11px/1.8 'JetBrains Mono';color:#00D4FF;pointer-events:none}
+.g-hud b{color:#00ffa3;animation:blink 1.4s infinite}
+#toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,160px);z-index:90;padding:13px 20px;border-radius:14px;background:#081226;border:1px solid #00D4FF;box-shadow:0 0 30px rgba(0,212,255,.6);max-width:92%;text-align:center;transition:transform .45s cubic-bezier(.34,1.6,.64,1)}
+#toast.show{transform:translate(-50%,0)}
+#res{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(3,7,18,.9);backdrop-filter:blur(8px);padding:20px}
+#res.show{display:flex;animation:fade .4s}
+@keyframes fade{from{opacity:0}}
+.check{width:104px;height:104px;border-radius:50%;border:3px solid var(--rc,#00ffa3);display:flex;align-items:center;justify-content:center;font-size:52px;color:var(--rc,#00ffa3);box-shadow:0 0 50px var(--rc,#00ffa3),inset 0 0 30px rgba(255,255,255,.08);animation:pop .7s cubic-bezier(.34,1.8,.64,1)}
+@keyframes pop{from{transform:scale(0) rotate(-90deg)}}
+.dot{position:fixed;width:6px;height:6px;border-radius:50%;z-index:98;pointer-events:none}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body class="relative min-h-screen text-slate-100 selection:bg-cyber-neon selection:text-black">
+
+    <!-- Background Canvas for Matrix Rain & Visual Effects -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Header Navigation with Fixed Top Corner Social Badges -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="p-2 rounded-lg bg-cyber-neon/10 text-cyber-neon border border-cyber-neon/30 group-hover:bg-cyber-neon group-hover:text-black transition-all duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-mono font-bold text-lg tracking-wider text-white group-hover:text-cyber-neon transition-colors">KRYSEC</span>
+                    <span class="text-[10px] font-mono text-slate-400 tracking-widest uppercase">Cyber Security Academy</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-mono">
+                <a href="#about" class="text-slate-300 hover:text-cyber-neon transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Biz Haqimizda
+                </a>
+                <a href="#knowledge" class="text-slate-300 hover:text-cyber-neon transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Bilim Bazasi
+                </a>
+                <a href="#simulator" class="text-slate-300 hover:text-cyber-neon transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    Kiber Simulyator
+                </a>
+                <a href="#quiz" class="text-slate-300 hover:text-cyber-neon transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Test & Sinov
+                </a>
+            </nav>
+
+            <!-- TOP CORNER SOCIAL BADGES (Telegram & Instagram) & Register CTA -->
+            <div class="flex items-center space-x-3">
+                <!-- Telegram Badge -->
+                <a href="https://t.me/krysec_admin" target="_blank" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 hover:border-cyan-400 hover:bg-cyan-950/30 text-cyan-400 transition-all text-xs font-mono group">
+                    <svg class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.99-1.66 4.82-1.95 5.36-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.14-.03.22z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Telegram</span>
+                </a>
+
+                <!-- Instagram Badge -->
+                <a href="https://instagram.com/krysec_academy" target="_blank" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 hover:border-pink-500 hover:bg-pink-950/30 text-pink-400 transition-all text-xs font-mono group">
+                    <svg class="w-4 h-4 text-pink-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span class="hidden sm:inline">Instagram</span>
+                </a>
+
+                <!-- Register Modal Trigger -->
+                <a href="#register" class="px-4 py-1.5 rounded-lg bg-cyber-neon/10 hover:bg-cyber-neon border border-cyber-neon text-cyber-neon hover:text-black font-mono font-bold text-xs transition-all shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                    Ro'yxatdan o'tish
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Text Column -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-neon/10 border border-cyber-neon/30 text-cyber-neon text-xs font-mono">
+                        <span class="w-2 h-2 rounded-full bg-cyber-neon animate-ping"></span>
+                        <span>AKADEMIYA QABULI OCHIQ 2026</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                        Kiberhavfsizlik va <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-neon via-cyan-400 to-purple-500 neon-text-glow">
+                            Ahamiyatli Himoya
+                        </span> Professional Standardi
+                    </h1>
+
+                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl font-sans">
+                        KRYSEC Akademiyasida zamonaviy tahlil, pentesting, Red/Blue Team strategiyalari hamda xalqaro kiberxavfsizlik standartlarini amaliy mashg'ulotlar orqali mukammal egallang.
+                    </p>
+
+                    <!-- Feature Tags (No Emojis) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 font-mono text-xs">
+                        <div class="flex items-center space-x-2 p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                            <svg class="w-4 h-4 text-cyber-neon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <span class="text-slate-300">Pentesting & Labs</span>
+                        </div>
+                        <div class="flex items-center space-x-2 p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                            <svg class="w-4 h-4 text-cyber-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            <span class="text-slate-300">MITRE ATT&CK Framework</span>
+                        </div>
+                        <div class="flex items-center space-x-2 p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
+                            <svg class="w-4 h-4 text-cyber-purple shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            <span class="text-slate-300">Reverse Engineering</span>
+                        </div>
+                    </div>
+
+                    <!-- CTA Group -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
+                        <a href="#register" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyber-neon to-cyan-500 text-black font-mono font-bold text-sm tracking-wide text-center hover:opacity-90 transition-all shadow-[0_0_25px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                            DARHOL A'ZO BO'LISH
+                        </a>
+                        <a href="#knowledge" class="px-6 py-3.5 rounded-xl glass-panel text-slate-300 hover:text-cyber-neon hover:border-cyber-neon/50 font-mono text-sm text-center transition-all flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            BILIM BAZASI
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right 3D Interactive Globe Canvas Container -->
+                <div class="lg:col-span-5 relative flex justify-center">
+                    <div class="relative w-full max-w-[420px] aspect-square rounded-2xl glass-panel p-4 border border-cyber-neon/30 overflow-hidden flex flex-col items-center justify-center">
+                        <!-- Header Bar for Globe Panel -->
+                        <div class="absolute top-3 left-4 right-4 flex items-center justify-between font-mono text-[11px] text-slate-400 z-10 border-b border-slate-800 pb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-cyber-green animate-pulse"></span>
+                                <span class="text-slate-300">GLOBAL MONITORING NODE</span>
+                            </div>
+                            <span class="text-cyber-neon">SYS_STATUS: ACTIVE</span>
+                        </div>
+
+                        <!-- 3D Globe Container -->
+                        <div id="globe-container" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+                        <!-- Bottom HUD info -->
+                        <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center text-[10px] font-mono text-slate-400 border-t border-slate-800/80 pt-2 z-10">
+                            <span>SATELLITE_ORBITS: 12</span>
+                            <span>GROUND_STATIONS: OK</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- KNOWLEDGE BASE & FRAMEWORKS SECTION -->
+    <section id="knowledge" class="py-20 relative border-t border-slate-800/80 bg-slate-950/40">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-purple/10 border border-cyber-purple/30 text-cyber-purple text-xs font-mono">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span>TA'LIM NUKTASI</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                    Kiberxavfsizlik Akademik Bilim Bazasi
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base font-sans">
+                    Standart kurslar o'rniga zamonaviy kiberxavfsizlik nazariyalari, xalqaro xavfsizlik freymvorklari hamda amaliy tahdidlar bo'yicha tayyorlangan interaktiv o'quv modullari.
+                </p>
+            </div>
+
+            <!-- Frameworks Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- CIA Triad -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyber-neon/10 border border-cyber-neon/30 text-cyber-neon">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyber-neon border border-slate-700">CORE ARCHITECTURE</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">CIA Triad Model</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        Confidentiality (Maxfiylik), Integrity (Yaxlitlik) va Availability (Mavjudlik) — axborot xavfsizligining asosiy uch ustuni.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Shifrlash (AES-256, TLS 1.3)</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Hash va raqamli imzo (SHA-256)</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-neon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> DDoS va Zaxira Tizimlar</li>
+                    </ul>
+                </div>
+
+                <!-- Zero Trust Architecture -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyber-purple/10 border border-cyber-purple/30 text-cyber-purple">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyber-purple border border-slate-700">SECURITY FRAMEWORK</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">Zero Trust Arxitekturasi</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        "Hech qachon ishonma, har doim tekshir" (Never Trust, Always Verify). Ichki tarmoqdagi foydalanuvchilar ham doimiy autentifikatsiyadan o'tadi.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Multi-Factor Auth (MFA)</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Mikrosegmentatsiya</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Least Privilege Principlari</li>
+                    </ul>
+                </div>
+
+                <!-- MITRE ATT&CK -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyber-red/10 border border-cyber-red/30 text-cyber-red">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyber-red border border-slate-700">THREAT MATRIX</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">MITRE ATT&CK Matrix</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        Hujumchilarning (APT guruhlar) taktika, texnika va amaliy jarayonlarini (TTPs) tasniflovchi global bilimlar bazasi.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Initial Access & Execution</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Privilege Escalation</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Lateral Movement & Exfiltration</li>
+                    </ul>
+                </div>
+
+                <!-- OWASP Top 10 -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyber-amber/10 border border-cyber-amber/30 text-cyber-amber">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyber-amber border border-slate-700">WEB SECURITY</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">OWASP Top 10 (2026)</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        Veb-ilovalar va API larda eng ko'p uchraydigan va kritik havfli zaifliklar standart ro'yxati.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> SQL Injection & XSS</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Broken Access Control</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> SSRF & Cryptographic Failures</li>
+                    </ul>
+                </div>
+
+                <!-- Cyber Kill Chain -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyber-green/10 border border-cyber-green/30 text-cyber-green">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyber-green border border-slate-700">LOCKHEED MARTIN MODEL</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">Cyber Kill Chain</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        Kiber-hujumning 7 bosqichli modeli: Qidiruvdan boshlab tizimni to'liq nazorat qilishgacha bo'lgan zanjir.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Reconnaissance & Weaponization</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Delivery & Exploitation</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Command & Control (C2)</li>
+                    </ul>
+                </div>
+
+                <!-- SOC & Digital Forensics -->
+                <div class="glass-panel rounded-2xl p-6 relative group transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <span class="font-mono text-[10px] px-2 py-1 rounded bg-slate-800 text-cyan-400 border border-slate-700">DEFENSIVE OPS</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-mono mb-2">SOC & Digital Forensics</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-4 font-sans">
+                        Security Operations Center va raqamli kriminalistika — hodisalarni aniqlash va tahlil qilish strategiyasi.
+                    </p>
+                    <ul class="text-xs font-mono space-y-2 text-slate-300 border-t border-slate-800 pt-3">
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> SIEM & SOAR Integration</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Memory & Network Forensics</li>
+                        <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Incident Response Plans</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- THREAT SIMULATOR SECTION -->
+    <section id="simulator" class="py-20 relative border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-red/10 border border-cyber-red/30 text-cyber-red text-xs font-mono mb-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>INTERAKTIV MONITORING</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white font-mono">
+                        Real-Vaqt Kiber Hujumlar Simulyatori
+                    </h2>
+                </div>
+                <div class="flex items-center space-x-3 text-xs font-mono">
+                    <span class="flex items-center gap-1.5 text-cyber-green"><span class="w-2 h-2 rounded-full bg-cyber-green animate-ping"></span> LOG_STREAM: ACTIVE</span>
+                </div>
+            </div>
+
+            <!-- Terminal & Chart View -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Terminal Console -->
+                <div class="lg:col-span-7 glass-panel rounded-2xl p-4 border border-slate-800 font-mono text-xs flex flex-col h-96">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-cyber-red/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-cyber-amber/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-cyber-green/80 inline-block"></span>
+                            <span class="ml-2 text-slate-300">krysec-soc-node-01:/var/log/attacks.log</span>
+                        </div>
+                        <span class="text-[10px] text-cyber-neon">LIVE_STREAM</span>
+                    </div>
+
+                    <!-- Scrolling Console Content -->
+                    <div id="terminal-logs" class="flex-1 overflow-y-auto pt-3 space-y-2 font-mono text-slate-300 pr-2">
+                        <!-- JS injects stream items here -->
+                    </div>
+                </div>
+
+                <!-- Live Metrics & Chart -->
+                <div class="lg:col-span-5 glass-panel rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-mono text-slate-300 mb-4 flex items-center justify-between">
+                            <span>HUJUM TURLARI SIKLI</span>
+                            <span class="text-xs text-cyber-neon font-normal">24h DATA</span>
+                        </h3>
+                        
+                        <!-- SVG Live Bar Chart -->
+                        <div class="h-44 w-full flex items-end justify-between gap-2 border-b border-slate-800 pb-2">
+                            <div class="flex-1 bg-cyber-red/20 hover:bg-cyber-red/40 transition-all rounded-t relative group" style="height: 85%;">
+                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyber-red opacity-0 group-hover:opacity-100 transition-opacity">DDoS</div>
+                            </div>
+                            <div class="flex-1 bg-cyber-amber/20 hover:bg-cyber-amber/40 transition-all rounded-t relative group" style="height: 60%;">
+                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyber-amber opacity-0 group-hover:opacity-100 transition-opacity">SQLi</div>
+                            </div>
+                            <div class="flex-1 bg-cyber-purple/20 hover:bg-cyber-purple/40 transition-all rounded-t relative group" style="height: 75%;">
+                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyber-purple opacity-0 group-hover:opacity-100 transition-opacity">XSS</div>
+                            </div>
+                            <div class="flex-1 bg-cyber-neon/20 hover:bg-cyber-neon/40 transition-all rounded-t relative group" style="height: 40%;">
+                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyber-neon opacity-0 group-hover:opacity-100 transition-opacity">Phish</div>
+                            </div>
+                            <div class="flex-1 bg-cyber-green/20 hover:bg-cyber-green/40 transition-all rounded-t relative group" style="height: 90%;">
+                                <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-mono text-cyber-green opacity-0 group-hover:opacity-100 transition-opacity">Ransom</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 pt-4 text-xs font-mono">
+                        <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                            <span class="text-slate-400 block mb-1">BLOKLANGAN</span>
+                            <span class="text-lg font-bold text-cyber-green">99.84%</span>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800">
+                            <span class="text-slate-400 block mb-1">O'RTASCHA RESP</span>
+                            <span class="text-lg font-bold text-cyber-neon">12.4 ms</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- INTERACTIVE QUIZ SECTION -->
+    <section id="quiz" class="py-20 relative border-t border-slate-800 bg-slate-950/30">
+        <div class="max-w-4xl mx-auto px-4 lg:px-8 relative z-10">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-green/10 border border-cyber-green/30 text-cyber-green text-xs font-mono mb-3">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>AMALIY TASHXIS</span>
+                </div>
+                <h2 class="text-3xl font-bold text-white font-mono">
+                    Kiber Tayyorgarlik Testi
+                </h2>
+                <p class="text-slate-400 text-xs sm:text-sm font-sans mt-2">
+                    Kiberxavfsizlik sohasidagi boshlang'ich bilim darajangizni va tayyorgarligingizni tekshirib ko'ring.
+                </p>
+            </div>
+
+            <!-- Quiz Card Panel -->
+            <div id="quiz-card" class="glass-panel rounded-2xl p-6 md:p-8 border border-slate-800">
+                <div id="quiz-content">
+                    <!-- JS Injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REGISTRATION FORM SECTION -->
+    <section id="register" class="py-20 relative border-t border-slate-800">
+        <div class="max-w-3xl mx-auto px-4 lg:px-8 relative z-10">
+            
+            <div class="glass-panel rounded-3xl p-6 md:p-10 border border-cyber-neon/40 shadow-[0_0_40px_rgba(0,240,255,0.1)] relative overflow-hidden">
+                
+                <div class="text-center mb-8 space-y-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyber-neon/10 border border-cyber-neon/30 text-cyber-neon text-xs font-mono">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span>ONLINE ANKETA</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white tracking-tight font-mono">
+                        Akademiyaga A'zo Bo'lish
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm font-sans">
+                        Ma'lumotlaringizni to'ldiring va o'zingizga qulay dars vaqtini tanlang.
+                    </p>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="registration-form" class="space-y-5 font-sans">
+                    
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1.5">ISM-FAMILIYA *</label>
+                        <div class="relative">
+                            <input type="text" id="input-fullname" required placeholder="Ali Valiyev" class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyber-neon focus:ring-1 focus:ring-cyber-neon rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1.5">TELEFON RAQAM *</label>
+                        <div class="relative">
+                            <input type="tel" id="input-phone" required placeholder="+998 90 123 45 67" class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyber-neon focus:ring-1 focus:ring-cyber-neon rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Schedule Time Selection (Mandatory Feature) -->
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1.5">DARSLAR VAQTI (SCHEDULE TIME) *</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="class-time" value="09:00" checked class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 peer-checked:border-cyber-neon peer-checked:bg-cyber-neon/10 peer-checked:text-cyber-neon text-center transition-all">
+                                    <div class="font-mono text-sm font-bold">09:00</div>
+                                    <div class="text-[10px] text-slate-400">Ertalabki Smen</div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="class-time" value="15:00" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 peer-checked:border-cyber-neon peer-checked:bg-cyber-neon/10 peer-checked:text-cyber-neon text-center transition-all">
+                                    <div class="font-mono text-sm font-bold">15:00</div>
+                                    <div class="text-[10px] text-slate-400">Tushdan keyin</div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="class-time" value="19:00" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-900 border border-slate-700 peer-checked:border-cyber-neon peer-checked:bg-cyber-neon/10 peer-checked:text-cyber-neon text-center transition-all">
+                                    <div class="font-mono text-sm font-bold">19:00</div>
+                                    <div class="text-[10px] text-slate-400">Kechki Smen</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Additional Note -->
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-1.5">QOSHIMCHA IZOH (IXTIYORIY)</label>
+                        <textarea id="input-notes" rows="3" placeholder="Tajribangiz yoki qiziqishlaringiz haqida qisqacha..." class="w-full bg-slate-900/90 border border-slate-700 focus:border-cyber-neon focus:ring-1 focus:ring-cyber-neon rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-all"></textarea>
+                    </div>
+
+                    <!-- Status Banner -->
+                    <div id="form-status" class="hidden p-3 rounded-xl text-xs font-mono"></div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="btn-submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-cyber-neon to-cyan-500 text-black font-mono font-bold text-sm tracking-wider uppercase hover:opacity-95 transition-all shadow-[0_0_20px_rgba(0,240,255,0.4)] flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        YUBORISH VA A'ZO BO'LISH
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-12 relative z-10 text-xs font-mono text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center space-x-3">
+                <div class="p-1.5 rounded bg-cyber-neon/10 text-cyber-neon border border-cyber-neon/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <span>&copy; 2026 KRYSEC Cybersecurity Academy. Barcha huquqlar himoyalangan.</span>
+            </div>
+
+            <!-- Social Links in Footer -->
+            <div class="flex items-center space-x-4">
+                <a href="https://t.me/krysec_admin" target="_blank" class="hover:text-cyber-neon transition-colors flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.02-1.96 1.25-5.54 3.69-.52.36-1 .53-1.42.52-.47-.01-1.37-.26-2.03-.48-.82-.27-1.47-.42-1.42-.88.03-.25.38-.51 1.07-.78 4.18-1.82 6.97-3.02 8.37-3.61 3.99-1.66 4.82-1.95 5.36-1.96.12 0 .38.03.55.17.14.12.18.28.2.45-.02.07-.02.14-.03.22z"/></svg>
+                    Telegram
+                </a>
+                <a href="https://instagram.com/krysec_academy" target="_blank" class="hover:text-pink-400 transition-colors flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    Instagram
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Telegram Web App SDK if present
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        /* ----------------------------------------------------
+           1. MATRIX & PARTICLE DUAL BACKGROUND CANVAS
+        ---------------------------------------------------- */
+        const bgCanvas = document.getElementById('bg-canvas');
+        const ctx = bgCanvas.getContext('2d');
+
+        function resizeCanvas() {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Matrix Rain Columns Setup
+        const matrixChars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ$%#@&';
+        const fontSize = 14;
+        const columns = Math.floor(window.innerWidth / fontSize);
+        const drops = Array(columns).fill(1);
+
+        // Particle Mesh Setup
+        const particles = Array.from({ length: 45 }, () => ({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            radius: Math.random() * 1.5 + 1
+        }));
+
+        let mouseX = 0;
+        let mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function renderBg() {
+            // Faded background for trail effect
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
+            ctx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            // Draw Matrix Rain
+            ctx.fillStyle = '#00F0FF';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > bgCanvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+
+            // Draw Particles & Mesh lines
+            ctx.fillStyle = 'rgba(0, 240, 255, 0.5)';
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.08)';
+            ctx.lineWidth = 1;
+
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > bgCanvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > bgCanvas.height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Connect nearby particles
+                for (let j = idx + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            requestAnimationFrame(renderBg);
+        }
+        requestAnimationFrame(renderBg);
+
+
+        /* ----------------------------------------------------
+           2. THREE.JS 3D INTERACTIVE CYBER GLOBE
+        ---------------------------------------------------- */
+        const globeContainer = document.getElementById('globe-container');
+        if (globeContainer) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+            camera.position.z = 250;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(380, 380);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            globeContainer.appendChild(renderer.domElement);
+
+            // Wireframe Globe Sphere
+            const sphereGeo = new THREE.SphereGeometry(75, 28, 28);
+            const sphereMat = new THREE.MeshBasicMaterial({
+                color: 0x00F0FF,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.25
+            });
+            const globe = new THREE.Mesh(sphereGeo, sphereMat);
+            scene.add(globe);
+
+            // Satellite Orbits ring
+            const ringGeo = new THREE.RingGeometry(95, 96, 64);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 3;
+            scene.add(ring);
+
+            // Orbiting Node Points
+            const pointsCount = 60;
+            const pointsGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(pointsCount * 3);
+
+            for(let i = 0; i < pointsCount * 3; i += 3) {
+                const u = Math.random();
+                const v = Math.random();
+                const theta = u * 2.0 * Math.PI;
+                const phi = Math.acos(2.0 * v - 1.0);
+                const r = 76;
+                positions[i] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i+1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i+2] = r * Math.cos(phi);
+            }
+
+            pointsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const pointsMat = new THREE.PointsMaterial({ color: 0x10B981, size: 3 });
+            const nodes = new THREE.Points(pointsGeo, pointsMat);
+            globe.add(nodes);
+
+            // Mouse interaction drag
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            globeContainer.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            globeContainer.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+                globe.rotation.y += deltaMove.x * 0.008;
+                globe.rotation.x += deltaMove.y * 0.008;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            function animateGlobe() {
+                requestAnimationFrame(animateGlobe);
+                if (!isDragging) {
+                    globe.rotation.y += 0.003;
+                    ring.rotation.z += 0.002;
+                }
+                renderer.render(scene, camera);
+            }
+            animateGlobe();
+        }
+
+
+        /* ----------------------------------------------------
+           3. LIVE THREAT SIMULATOR TERMINAL
+        ---------------------------------------------------- */
+        const terminalLogs = document.getElementById('terminal-logs');
+        const attackTypes = ['SYN_FLOOD', 'SQL_INJECTION', 'XSS_PAYLOAD', 'RANSOMWARE_ENCRYPT', 'PORT_SCAN', 'BRUTE_FORCE'];
+        const targets = ['192.168.1.104', '10.0.4.12', '172.16.0.88', 'db-cluster.internal', 'auth-gateway.node'];
+
+        function addLogEntry() {
+            if (!terminalLogs) return;
+            const now = new Date().toISOString().split('T')[1].slice(0, 8);
+            const attack = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+            const ip = targets[Math.floor(Math.random() * targets.length)];
+            const status = Math.random() > 0.2 ? 'BLOCKED' : 'DETECTED';
+            const colorClass = status === 'BLOCKED' ? 'text-cyber-green' : 'text-cyber-red';
+
+            const logRow = document.createElement('div');
+            logRow.className = 'flex items-center justify-between text-[11px] border-b border-slate-900/60 pb-1';
+            logRow.innerHTML = `
+                <span class="text-slate-500">[${now}]</span>
+                <span class="text-slate-300 font-bold">${attack}</span>
+                <span class="text-slate-400">${ip}</span>
+                <span class="${colorClass} font-bold px-1.5 py-0.5 rounded bg-slate-900">${status}</span>
+            `;
+
+            terminalLogs.prepend(logRow);
+            if (terminalLogs.children.length > 20) {
+                terminalLogs.removeChild(terminalLogs.lastChild);
+            }
+        }
+        setInterval(addLogEntry, 1800);
+
+
+        /* ----------------------------------------------------
+           4. INTERACTIVE QUIZ ENGINE
+        ---------------------------------------------------- */
+        const quizData = [
+            {
+                q: "1. Zero Trust arxitekturasining asosiy falsafasi nima?",
+                options: [
+                    "Faqat tashqi IP manzillarni bloklash",
+                    "Hech qanday foydalanuvchi yoki qurilmaga avvaldan ishonmaslik",
+                    "Faqat antivirus dasturlaridan foydalanish",
+                    "Tizimni faqat lokal tarmoqda ishlatish"
+                ],
+                correct: 1
+            },
+            {
+                q: "2. SQL Injection zaifligi nimaga olib kelishi mumkin?",
+                options: [
+                    "Faqat server tezligini pasaytirishga",
+                    "Ma'lumotlar bazasini ruxsatsiz o'qish, o'chirish yoki o'zgartirishga",
+                    "DDoS hujumi hosil qilishga",
+                    "Parollarni avtomatik shifrlashga"
+                ],
+                correct: 1
+            },
+            {
+                q: "3. CIA Triad modelidagi 'Integrity' (Yaxlitlik) nimani anglatadi?",
+                options: [
+                    "Ma'lumotlarning begona ko'zlardan maxfiy saqlanishi",
+                    "Ma me'yorida va o'z vaqtida taqdim etilishi",
+                    "Ma'lumotlarning ruxsatsiz o'zgartirilmaganligi va aniqligi",
+                    "Tizimning 24/7 rejimida uzluksiz ishlashi"
+                ],
+                correct: 2
+            }
+        ];
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-content');
+            if (!container) return;
+
+            if (currentQuizIndex >= quizData.length) {
+                container.innerHTML = `
+                    <div class="text-center space-y-4 py-6 font-mono">
+                        <div class="w-16 h-16 rounded-full bg-cyber-green/20 text-cyber-green border border-cyber-green flex items-center justify-center mx-auto text-2xl">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white">TEST YAKUNLANDI</h3>
+                        <p class="text-slate-300 text-sm">Siz ${quizData.length} ta savoldan <span class="text-cyber-neon font-bold">${quizScore}</span> tasiga to'g'ri javob berdingiz.</p>
+                        <button onclick="resetQuiz()" class="px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyber-neon border border-cyber-neon/40 text-xs font-mono">
+                            QAYTA TOPSHIRISH
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const current = quizData[currentQuizIndex];
+            container.innerHTML = `
+                <div class="space-y-6 font-mono">
+                    <div class="flex items-center justify-between text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span>SAVOL ${currentQuizIndex + 1} / ${quizData.length}</span>
+                        <span class="text-cyber-neon">BALL: ${quizScore}</span>
+                    </div>
+
+                    <h3 class="text-lg font-bold text-white leading-snug">${current.q}</h3>
+
+                    <div class="space-y-3">
+                        ${current.options.map((opt, idx) => `
+                            <button onclick="handleQuizAnswer(${idx})" class="w-full p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyber-neon hover:bg-cyber-neon/10 text-left text-xs text-slate-300 hover:text-white transition-all flex items-center gap-3">
+                                <span class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 shrink-0">${idx + 1}</span>
+                                <span>${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleQuizAnswer = function(selectedIdx) {
+            if (selectedIdx === quizData[currentQuizIndex].correct) {
+                quizScore++;
+            }
+            currentQuizIndex++;
+            renderQuiz();
+        };
+
+        window.resetQuiz = function() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            renderQuiz();
+        };
+
+        renderQuiz();
+
+
+        /* ----------------------------------------------------
+           5. REGISTRATION FORM & TELEGRAM BOT INTEGRATION
+        ---------------------------------------------------- */
+        const regForm = document.getElementById('registration-form');
+        const formStatus = document.getElementById('form-status');
+
+        if (regForm) {
+            regForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const fullname = document.getElementById('input-fullname').value.trim();
+                const phone = document.getElementById('input-phone').value.trim();
+                const timeSelected = document.querySelector('input[name="class-time"]:checked')?.value || '09:00';
+                const notes = document.getElementById('input-notes').value.trim();
+
+                if (!fullname || !phone) {
+                    showStatus('Iltimos, barcha majburiy maydonlarni to\'ldiring!', 'error');
+                    return;
+                }
+
+                // Show Pending Status
+                showStatus('Yuborilmoqda...', 'pending');
+
+                // Structured Text Payload (HTML Formatted without emojis)
+                const payloadText = `<b>[ YANGI ARIZA - KRYSEC ACADEMY ]</b>\n\n` +
+                    `<b>Ism-Familiya:</b> ${escapeHtml(fullname)}\n` +
+                    `<b>Telefon:</b> <code>${escapeHtml(phone)}</code>\n` +
+                    `<b>Dars Vaqti:</b> <b>${escapeHtml(timeSelected)}</b>\n` +
+                    `<b>Izoh:</b> ${escapeHtml(notes || 'Yo\'q')}\n\n` +
+                    `<b>Sana:</b> ${new Date().toLocaleString('uz-UZ')}`;
+
+                // Send via Telegram WebApp if available
+                if (tg && tg.sendData) {
+                    try {
+                        tg.sendData(JSON.stringify({
+                            type: 'ACADEMY_REGISTRATION',
+                            fullname,
+                            phone,
+                            class_time: timeSelected,
+                            notes
+                        }));
+                    } catch (err) {
+                        console.log('Telegram sendData error:', err);
+                    }
+                }
+
+                // Simulate/Queue success locally
+                setTimeout(() => {
+                    showStatus('Arizangiz muvaffaqiyatli qabul qilindi! Tez orada aloqaga chiqamiz.', 'success');
+                    regForm.reset();
+                }, 1000);
+            });
+        }
+
+        function showStatus(msg, type) {
+            if (!formStatus) return;
+            formStatus.classList.remove('hidden', 'bg-cyber-red/20', 'text-cyber-red', 'bg-cyber-green/20', 'text-cyber-green', 'bg-slate-800', 'text-slate-300');
+            
+            if (type === 'error') {
+                formStatus.classList.add('bg-cyber-red/20', 'text-cyber-red', 'border', 'border-cyber-red/40');
+            } else if (type === 'success') {
+                formStatus.classList.add('bg-cyber-green/20', 'text-cyber-green', 'border', 'border-cyber-green/40');
+            } else {
+                formStatus.classList.add('bg-slate-800', 'text-slate-300');
+            }
+
+            formStatus.textContent = msg;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+    </script>
+</body>
+</html>
